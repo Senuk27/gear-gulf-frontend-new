@@ -1,16 +1,13 @@
-import { Box, Button, Grid, Pagination, TextField, Typography } from '@mui/material'
-import sell from '../../assets/sell.png'
+import {Box, Button, Grid, Pagination, TextField, Typography} from '@mui/material'
 import MyCard from '../../Components/MyCard'
-import { useForm } from 'react-hook-form';
-import {getVehiclesByUser, sellVehicle, uploadImage} from '../../services/ApiService';
-import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
+import {useForm} from 'react-hook-form';
+import {getImage, getVehiclesByUser, uploadImage} from '../../services/ApiService';
+import React, {useEffect, useState} from 'react';
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
-import axios from "axios";
 
 const Gallery = () => {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const {handleSubmit, formState: {errors}} = useForm();
     const [page, setPage] = useState(1);
     const [cards, setCards] = useState(null);
     const [pagesCount, setPagesCount] = useState(0);
@@ -19,6 +16,7 @@ const Gallery = () => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [file, setFile] = useState(null);
     const [uploadedImageId, setUploadedImageId] = useState(null);
+    const [imageUrl, setImageUrl] = useState();
 
     const handleFileChange = async (event) => {
         setFile(event.target.files[0].name);
@@ -54,11 +52,11 @@ const Gallery = () => {
         }
         try {
             const response = await getVehiclesByUser(data);
-            console.log("sell : ",response)
+            console.log("sell : ", response)
             const newCards = response.vehicles.content.map(vehicle => ({
                 id: vehicle.vehicleId,
                 title: vehicle.vehicleName,
-                image : vehicle?.imageName,
+                image: vehicle?.imageName,
                 description: vehicle.description,
                 price: vehicle.bidAmount
             }));
@@ -73,43 +71,27 @@ const Gallery = () => {
         fetchVehicles();
     }, [page]);
 
-    const onSubmit = async (data) => {
-        const userId = localStorage.getItem('userId');
-        const postedDate = dayjs().format('YYYY-MM-DD HH:mm:ss');
-        const startDate = data.startDate + " 00:00:00";
-        const endDate = data.endDate + " 00:00:00";
-
-        const payload = {
-            vehicleName: data.vehicleName,
-            description: data.description,
-            year: data.year,
-            bidAmount: data.bidAmount,
-            startDate: startDate,
-            endDate: endDate,
-            postedDate: postedDate,
-            userId: userId,
-            imageName : uploadedImageId
-        }
+    const onSubmit = async () => {
         try {
-            const response = await sellVehicle(payload);
-            if(response.status === "200") {
+            const response = await getImage(uploadedImageId);
+            console.log("response: ", response);
+            if (response) {
+                setImageUrl(response);
+                setOpenSnackbar(true);
+                setAlertMessage("Image Uploaded Successfully!");
                 setIsSuccess(true);
-                setAlertMessage(response.message);
-                setOpenSnackbar(true);
-                window.location.reload()
             } else {
-                setAlertMessage(response.message);
                 setOpenSnackbar(true);
+                setAlertMessage("Image Upload Failed!");
             }
-        } catch (err) {
-            console.log("error selling vehicle", err);
+        } catch (e) {
+            console.log(e);
         }
-        console.log(data);
     };
 
     const handleSnackBarClose = () => {
         setOpenSnackbar(false);
-        window.location.reload();
+        // window.location.reload();
     }
 
     return (
@@ -118,120 +100,121 @@ const Gallery = () => {
                 px: 10,
                 py: 5,
             }}>
-                <Box  sx={{
+                <Box sx={{
                     width: 389,
                     height: 652,
                     ml: 5,
                     position: 'absolute',
                     top: 140,
-                    right: 150,}}>
-                        <Box sx={{
-                    // width: '100%',
-                    width: 'auto',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    maxHeight: 440,
-                    bgcolor: '#FFFFFF',
-                    mt: 4,
-                    borderRadius: '10px',
-                    px: 5,
-                    py: 4,
-                    gap: 1,
+                    right: 150,
                 }}>
-                    <Typography sx={{
-                        fontFamily: 'poppins',
-                        fontSize: 20,
-                        fontWeight: 600,
-                        color: '#000000',
-                        mb: 3,
-                        
-                    }}>
-                        Upload Your Classic Car Image
-                    </Typography>
                     <Box sx={{
-                        display: 'flex',
-                        gap: 3,
-                        width: 633,
-                        mb: 3,
-                        // height: '100%',
-                    }}>
-                    </Box>
-                    <Box sx={{
-                       textAlign: 'center',
-                        gap: 3,
+                        // width: '100%',
                         width: 'auto',
-                        mb: 3,
-                        // height: '100%',
-                    }}>
-                        <Typography><span style={{ color: '#000000', fontWeight:'100px' }} >Choose a file or drag & drop it here </span>
-                           
-                            </Typography>
-                        <Typography><span style={{ color: '#808080' }} >JPG PNG formats, up to 50M</span></Typography>
-                        
-                    </Box>
-                    <Box sx={{
                         display: 'flex',
-                        gap: 3,
-                        width: 'auto',
-                        mb: 3,
-                        // height: '100%',
+                        flexDirection: 'column',
+                        maxHeight: 440,
+                        bgcolor: '#FFFFFF',
+                        mt: 4,
+                        borderRadius: '10px',
+                        px: 5,
+                        py: 4,
+                        gap: 1,
                     }}>
-                        {/* {errors.bidAmount && <span>Bid Amount is required</span>} */}
-                        <TextField
-                        placeholder='upload image'
-                            disabled
-                            fullWidth
-                            // sx={{ width: '100%',height:'20px' ,bgcolor:'#FFFFFF'}}
-                            value={file}
-                            InputProps={{
-                                endAdornment: (
-                                    <Button
-                                        variant="outlined"
-                                        sx={{ position: "absolute", right: 10,height:"30px" }}
-                                        component="label"
-                                        htmlFor="signature-file"
-                                    >
-                                        Upload
-                                        <input
-                                            type="file"
-                                            id="signature-file"
-                                            name="signature"
-                                            onChange={handleFileChange}
-                                            accept="image/*"
-                                            style={{ display: "none" }}
-                                        />
-                                    </Button>
-                                ),  
-                            }}
-                        />
-                        {/* {errors.UploadImage && <span>Upload Image is required</span>} */}
-                    </Box>
-                   
-                    {/* {errors.description && <span>Description is required</span>} */}
-                    <Button
-                        // onClick={handleSignUp}
-                        type='submit'
-                        variant="contained"
-                        sx={{
-                            width: 'auto',
-                            height: 50,
-                            mt: 4,
-                            borderRadius: "5px",
-                            bgcolor: "#6600B5",
-                            fontFamily: "poppins",
+                        <Typography sx={{
+                            fontFamily: 'poppins',
                             fontSize: 20,
                             fontWeight: 600,
-                            ":hover": {
+                            color: '#000000',
+                            mb: 3,
+
+                        }}>
+                            Upload Your Classic Car Image
+                        </Typography>
+                        <Box sx={{
+                            display: 'flex',
+                            gap: 3,
+                            width: 633,
+                            mb: 3,
+                            // height: '100%',
+                        }}>
+                        </Box>
+                        <Box sx={{
+                            textAlign: 'center',
+                            gap: 3,
+                            width: 'auto',
+                            mb: 3,
+                            // height: '100%',
+                        }}>
+                            <Typography><span style={{color: '#000000', fontWeight: '100px'}}>Choose a file or drag & drop it here </span>
+
+                            </Typography>
+                            <Typography><span style={{color: '#808080'}}>JPG PNG formats, up to 50M</span></Typography>
+
+                        </Box>
+                        <Box sx={{
+                            display: 'flex',
+                            gap: 3,
+                            width: 'auto',
+                            mb: 3,
+                            // height: '100%',
+                        }}>
+                            {/* {errors.bidAmount && <span>Bid Amount is required</span>} */}
+                            <TextField
+                                placeholder='upload image'
+                                disabled
+                                fullWidth
+                                // sx={{ width: '100%',height:'20px' ,bgcolor:'#FFFFFF'}}
+                                value={file}
+                                InputProps={{
+                                    endAdornment: (
+                                        <Button
+                                            variant="outlined"
+                                            sx={{position: "absolute", right: 10, height: "30px"}}
+                                            component="label"
+                                            htmlFor="signature-file"
+                                        >
+                                            Upload
+                                            <input
+                                                type="file"
+                                                id="signature-file"
+                                                name="signature"
+                                                onChange={handleFileChange}
+                                                accept="image/*"
+                                                style={{display: "none"}}
+                                            />
+                                        </Button>
+                                    ),
+                                }}
+                            />
+                            {/* {errors.UploadImage && <span>Upload Image is required</span>} */}
+                        </Box>
+
+                        {/* {errors.description && <span>Description is required</span>} */}
+                        <Button
+                            // onClick={handleUpdateImage}
+                            type='submit'
+                            variant="contained"
+                            sx={{
+                                width: 'auto',
+                                height: 50,
+                                mt: 4,
+                                borderRadius: "5px",
                                 bgcolor: "#6600B5",
-                            },
-                        }}
-                    >
-                        Upload Image
-                    </Button>
-                </Box>
-                   
-                   
+                                fontFamily: "poppins",
+                                fontSize: 20,
+                                fontWeight: 600,
+                                ":hover": {
+                                    bgcolor: "#6600B5",
+                                },
+                            }}
+                        >
+                            Upload Image
+                        </Button>
                     </Box>
+
+
+                </Box>
                 <Typography sx={{
                     fontFamily: 'poppins',
                     fontSize: 30,
@@ -241,19 +224,26 @@ const Gallery = () => {
                     // mt: 20,
                     // ml: 10,
                 }}>
-                    Upload Your <span style={{ color: '#6600B5' }} >  Classic Car </span> Image
+                    Upload Your <span style={{color: '#6600B5'}}>  Classic Car </span> Image
                 </Typography>
+
+                {/*Show Uploaded Images*/}
+                <Box sx={{width: '300px', height: '180px', mt: 2}}>
+                    <img src={imageUrl} alt={uploadedImageId != "" ? "No Images Uploaded Yet!" : uploadedImageId}
+                         style={{height: '150px'}}/>
+                </Box>
+
                 <Typography sx={{
                     fontFamily: 'poppins',
                     fontSize: 30,
                     fontWeight: 600,
                     color: '#000000',
-                    mt: 10,
+                    // mt: 10,
                     // lineHeight: '45px',
                     // mt: 20,
                     // ml: 10,
                 }}>
-                    <span style={{ color: '#6600B5' }} >  Discover a World of Vehicles! </span>
+                    <span style={{color: '#6600B5'}}>  Discover a World of Vehicles! </span>
                 </Typography>
                 <Typography sx={{
                     fontFamily: 'poppins',
@@ -265,52 +255,55 @@ const Gallery = () => {
                     height: 'auto',
                     mt: 4,
                 }}>
-                 Explore our gallery of stunning cars from every angle. Browse through a collection of vehicles waiting to find their next owner.
-                 </Typography>
-                
+                    Explore our gallery of stunning cars from every angle. Browse through a collection of vehicles
+                    waiting to find their next owner.
+                </Typography>
+
                 <Grid container display={'flex'} justifyContent={'center'} alignItems={'center'} mt={4} rowGap={6}>
                     {cards?.map((card) => (
-                        <Grid item key={card.id} md={4} display={'flex'} justifyContent={'center'} alignItems={'center'}>
-                            <MyCard card={card} />
+                        <Grid item key={card.id} md={4} display={'flex'} justifyContent={'center'}
+                              alignItems={'center'}>
+                            <MyCard card={card}/>
                         </Grid>
                     ))}
                 </Grid>
+
                 <Pagination count={pagesCount}
-                    page={page}
-                    onChange={handleChange}
-                    sx={{
-                        mt: 4,
-                        ml: 80,
-                        '& .MuiPaginationItem-root': {
-                            bgcolor: '#EBEBEB',
-                            ":hover": {
-                                bgcolor: '#6600B5',
-                                opacity: '100%',
-                                color: '#FFFFFF',
-                            }
-                        },
-                        '& .MuiPaginationItem-root.Mui-selected': {
-                            bgcolor: '#6600B5',
-                            opacity: '60%',
-                            color: '#FFFFFF',
-                            "&:hover": {
-                                color: '#FFFFFF',
-                                bgcolor: '#6600B5',
-                                opacity: '100%',
-                            }
-                        },
-                    }}
+                            page={page}
+                            onChange={handleChange}
+                            sx={{
+                                mt: 4,
+                                ml: 80,
+                                '& .MuiPaginationItem-root': {
+                                    bgcolor: '#EBEBEB',
+                                    ":hover": {
+                                        bgcolor: '#6600B5',
+                                        opacity: '100%',
+                                        color: '#FFFFFF',
+                                    }
+                                },
+                                '& .MuiPaginationItem-root.Mui-selected': {
+                                    bgcolor: '#6600B5',
+                                    opacity: '60%',
+                                    color: '#FFFFFF',
+                                    "&:hover": {
+                                        color: '#FFFFFF',
+                                        bgcolor: '#6600B5',
+                                        opacity: '100%',
+                                    }
+                                },
+                            }}
                 />
                 <Snackbar
                     open={openSnackbar}
                     autoHideDuration={2500}
                     onClose={handleSnackBarClose}
-                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                    anchorOrigin={{vertical: "top", horizontal: "center"}}
                 >
                     <MuiAlert
                         onClose={handleSnackBarClose}
-                        severity= {isSuccess ? "success" : "error"}
-                        sx={{ width: "100%" }}
+                        severity={isSuccess ? "success" : "error"}
+                        sx={{width: "100%"}}
                     >
                         {alertMessage}
                     </MuiAlert>
