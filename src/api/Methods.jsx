@@ -43,6 +43,16 @@ export const fetchImage = async (imageName) => {
   }
 };
 
+export const deleteImage = async (imageName) => {
+  try {
+    await axiosInstance.post(`image/delete/${imageName}`, {
+      responseType: 'blob',
+    });
+  } catch (error) {
+    console.error('Error deleting image:', error);
+  }
+};
+
 // ------------------------ Get Data -----------------------------
 
 export const getData = async (url) => {

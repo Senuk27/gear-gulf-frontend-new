@@ -1,4 +1,4 @@
-import {postData, getData, sendFormData, fetchImage} from "../api/Methods";
+import {postData, getData, sendFormData, fetchImage, deleteImage} from "../api/Methods";
 
 // ------------------------ Sign Up -----------------------------
 
@@ -57,6 +57,14 @@ export const uploadImage = async (data) => {
     return response;
   }catch (error){
     console.error("Error in uploading image :", error);
+  }
+}
+
+export const onDeleteImage = async (imageName) => {
+  try {
+    await deleteImage(imageName);
+  }catch (error){
+    console.error("Error in deleting image :", error);
   }
 }
 

@@ -1,10 +1,16 @@
 import {Box, Button, Grid, Pagination, TextField, Typography} from '@mui/material'
 import MyCard from '../../Components/MyCard'
 import {useForm} from 'react-hook-form';
-import {getImage, getVehiclesByUser, uploadImage} from '../../services/ApiService';
+import {
+    getImage,
+    getVehiclesByUser,
+    onDeleteImage,
+    uploadImage
+} from '../../services/ApiService';
 import React, {useEffect, useState} from 'react';
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import DeleteIcon from '../../assets/delete.png';
 
 const Gallery = () => {
     const {handleSubmit, formState: {errors}} = useForm();
@@ -17,6 +23,8 @@ const Gallery = () => {
     const [file, setFile] = useState(null);
     const [uploadedImageId, setUploadedImageId] = useState(null);
     const [imageUrl, setImageUrl] = useState();
+    const [isHovered, setIsHovered] = useState(false);
+    const [isIconHovered, setIsIconHovered] = useState(false);
 
     const handleFileChange = async (event) => {
         setFile(event.target.files[0].name);
@@ -70,6 +78,18 @@ const Gallery = () => {
     useEffect(() => {
         fetchVehicles();
     }, [page]);
+
+    const onDelete = async () => {
+        try {
+            await onDeleteImage(uploadedImageId);
+            setOpenSnackbar(true);
+            setAlertMessage("Image Deleted Successfully!");
+            setIsSuccess(true);
+            setImageUrl(null);
+        } catch (e) {
+            console.log("Error in Deleting :", e);
+        }
+    }
 
     const onSubmit = async () => {
         try {
@@ -228,9 +248,74 @@ const Gallery = () => {
                 </Typography>
 
                 {/*Show Uploaded Images*/}
-                <Box sx={{width: '300px', height: '180px', mt: 2}}>
-                    <img src={imageUrl} alt={uploadedImageId != "" ? "No Images Uploaded Yet!" : uploadedImageId}
-                         style={{height: '150px'}}/>
+                <Box
+                    sx={{
+                        width: '300px',
+                        height: '300px',
+                        mt: 2,
+                        position: 'relative',
+                        overflow: 'hidden',
+                        '&:hover': {
+                            '& .overlay': {
+                                opacity: 1,
+                            },
+                            '& img': {
+                                filter: 'brightness(0.7)',
+                            },
+                        },
+                    }}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                >
+                    <img
+                        src={imageUrl}
+                        alt={imageUrl ? imageUrl : "No Images Uploaded Yet!"}
+                        style={{
+                            height: '280px',
+                            width: '100%',
+                            objectFit: 'cover',
+                            transition: 'filter 0.3s ease-in-out',
+                            filter: isHovered ? 'brightness(0.7)' : 'brightness(1)',
+                        }}
+                    />
+                    <Box
+                        className="overlay"
+                        sx={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            display: imageUrl ? 'flex' : 'none',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            opacity: isHovered ? 1 : 0,
+                            transition: 'opacity 0.3s ease-in-out',
+                        }}
+                    >
+                        <Box
+                            onClick={onDelete}
+                            onMouseEnter={() => setIsIconHovered(true)}
+                            onMouseLeave={() => setIsIconHovered(false)}
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '50px',
+                                height: '50px',
+                                borderRadius: '50%',
+                                cursor: 'pointer',
+                                transform: isHovered ? 'scale(1)' : 'scale(0.8)',
+                                opacity: isHovered ? 1 : 0,
+                                transition: 'all 0.3s ease-in-out',
+                            }}
+                        >
+                            <img src={DeleteIcon} alt="Delete" width={'100%'} style={{
+                                filter: isIconHovered ? 'brightness(1.2)' : 'brightness(1)',
+                                transition: 'filter 0.3s ease-in-out',
+                            }}/>
+                        </Box>
+                    </Box>
                 </Box>
 
                 <Typography sx={{
