@@ -1,7 +1,7 @@
-import { Box, Button, Grid, IconButton, Pagination, Rating, Typography, colors, TextField, } from '@mui/material'
+import {Box, Button, Grid, IconButton, Pagination, Rating, Typography, colors, TextField,} from '@mui/material'
 import car from '../../assets/car.png'
-import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import {useNavigate} from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
 import AOS from "aos";
 import "aos/dist/aos.css";
 import Card from '../../Components/Card';
@@ -10,13 +10,15 @@ import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import Review from '../../Components/Review';
 import BidDialog from '../../Components/BidDialog';
-import { getVehicles } from '../../services/ApiService';
-import { Controller, useForm } from "react-hook-form";
+import {getVehicles} from '../../services/ApiService';
+import {Controller, useForm} from "react-hook-form";
 import NewService from '../../services/NewService';
+import MuiAlert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 
 const Home = () => {
 
-    const { control, handleSubmit } = useForm({
+    const {control, handleSubmit, reset} = useForm({
         defaultValues: {
             name: "",
             rating: 3,
@@ -29,6 +31,10 @@ const Home = () => {
     const [cards, setCards] = useState(null);
     const [pagesCount, setPagesCount] = useState(0);
     const [feedbacks, setFeedbacks] = useState([]);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [isFeedbackSaved, setIsFeedbackSaved] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
 
     const pageCount = 3
 
@@ -66,14 +72,14 @@ const Home = () => {
 
     useEffect(() => {
         fetchFeedbacks();
-    }, []);
+    }, [isFeedbackSaved]);
 
     const fetchFeedbacks = async () => {
         try {
             const response = await NewService.getAllFeedbacks();
             console.log("feedbacks", response);
 
-            if (response?.status === 200) {
+            if (response?.status === "200") {
                 setFeedbacks(response?.feedbackList);
             }
         } catch (error) {
@@ -86,9 +92,9 @@ const Home = () => {
         const scrollAmount = 400; // Adjust this value as needed
         if (container) {
             if (direction === "left") {
-                container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+                container.scrollBy({left: -scrollAmount, behavior: "smooth"});
             } else {
-                container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+                container.scrollBy({left: scrollAmount, behavior: "smooth"});
             }
         }
     };
@@ -104,11 +110,26 @@ const Home = () => {
             });
 
             console.log("feedback response", feedbackSaveResponse);
+            setOpenSnackbar(true);
+            setAlertMessage("Feedback Submitted Successfully!");
+            setIsFeedbackSaved(!isFeedbackSaved);
+            setIsSuccess(true);
+
+            reset({
+                name: "",
+                rating: 3,
+                feedback: "",
+            });
         } catch (error) {
             console.error(error);
         }
     };
 
+
+    const handleSnackBarClose = () => {
+        setOpenSnackbar(false);
+        // window.location.reload();
+    }
 
     return (
         <>
@@ -122,7 +143,7 @@ const Home = () => {
                 mt: 20,
                 ml: 10,
             }}>
-                Your Gateway to <span style={{ color: '#6600B5' }} > Classic Car Auctions</span> and Treasures !
+                Your Gateway to <span style={{color: '#6600B5'}}> Classic Car Auctions</span> and Treasures !
             </Typography>
             <Typography sx={{
                 fontFamily: 'poppins',
@@ -134,7 +155,8 @@ const Home = () => {
                 mt: 4,
                 ml: 10,
             }}>
-                Welcome to our classic car auction hub, where timeless elegance meets your passion for automotive history. Start exploring and bidding today!
+                Welcome to our classic car auction hub, where timeless elegance meets your passion for automotive
+                history. Start exploring and bidding today!
             </Typography>
             <Box sx={{
                 display: 'flex',
@@ -214,12 +236,14 @@ const Home = () => {
                     textAlign: 'center',
                     // mx: 'auto',
                 }}>
-                    Feel the Excitement, Make Your Move: Live Auctions Where Every Bid Counts, Every Win Celebrates, Every Moment Thrills
+                    Feel the Excitement, Make Your Move: Live Auctions Where Every Bid Counts, Every Win Celebrates,
+                    Every Moment Thrills
                 </Typography>
                 <Grid container display={'flex'} justifyContent={'center'} alignItems={'center'} mt={4} rowGap={6}>
                     {cards?.map((card) => (
-                        <Grid item key={card.id} md={4} display={'flex'} justifyContent={'center'} alignItems={'center'}>
-                            <Card card={card} />
+                        <Grid item key={card.id} md={4} display={'flex'} justifyContent={'center'}
+                              alignItems={'center'}>
+                            <Card card={card}/>
                         </Grid>
                     ))}
                 </Grid>
@@ -261,7 +285,7 @@ const Home = () => {
                 >
                     What Clients Say
                 </Typography>
-                <Grid container spacing={4} sx={{ mt: 4, px: 4 }}>
+                <Grid container spacing={4} sx={{mt: 4, px: 4}}>
                     <Grid item xs={12} md={6}>
                         <Box
                             component="form"
@@ -307,11 +331,11 @@ const Home = () => {
                             <Controller
                                 name="name"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <TextField
                                         {...field}
                                         variant="standard"
-                                        InputProps={{ disableUnderline: true }}
+                                        InputProps={{disableUnderline: true}}
                                         fullWidth
                                         margin="normal"
                                         sx={{
@@ -340,12 +364,12 @@ const Home = () => {
                             <Controller
                                 name="rating"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <Rating
                                         {...field}
                                         name="service-rating"
                                         precision={1}
-                                        sx={{ mb: 2 }}
+                                        sx={{mb: 2}}
                                     />
                                 )}
                             />
@@ -364,11 +388,11 @@ const Home = () => {
                             <Controller
                                 name="feedback"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <TextField
                                         {...field}
                                         variant="standard"
-                                        InputProps={{ disableUnderline: true }}
+                                        InputProps={{disableUnderline: true}}
                                         placeholder="Your feedback"
                                         multiline
                                         rows={4}
@@ -399,7 +423,7 @@ const Home = () => {
                                     fontSize: 16,
                                     fontWeight: 600,
                                     textTransform: "uppercase",
-                                    ":hover": { bgcolor: "#5200a3" },
+                                    ":hover": {bgcolor: "#5200a3"},
                                 }}
                             >
                                 Submit
@@ -416,10 +440,10 @@ const Home = () => {
                                 pl: 4,
                             }}
                         >
-                            <Typography variant="h3" sx={{ fontWeight: 700, mb: 3 }}>
+                            <Typography variant="h3" sx={{fontWeight: 700, mb: 3}}>
                                 Fill the form to submit your feedback
                             </Typography>
-                            <Typography variant="body1" sx={{ color: "#757575" }}>
+                            <Typography variant="body1" sx={{color: "#757575"}}>
                                 We value your experience and are committed to making our car
                                 auctions even better. Your feedback helps us understand what
                                 we&apos;re doing right and where we can improve. Please take a
@@ -442,10 +466,9 @@ const Home = () => {
                         // mx: 'auto',
                     }}
                 >
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                    eiusmod tempor
+                    User Feedbacks
                 </Typography>
-                <Box sx={{ position: "relative", width: "80%", px: 4 }}>
+                <Box sx={{position: "relative", width: "80%", px: 4}}>
                     <IconButton
                         onClick={() => scrollReviews("left")}
                         sx={{
@@ -461,7 +484,7 @@ const Home = () => {
                             },
                         }}
                     >
-                        <ArrowBackRoundedIcon />
+                        <ArrowBackRoundedIcon/>
                     </IconButton>
 
                     <Box
@@ -483,12 +506,12 @@ const Home = () => {
                                 key={review.id}
                                 sx={{
                                     flexShrink: 0,
-                                    width: { xs: "100%", md: "calc(33.33% - 16px)" },
+                                    width: {xs: "100%", md: "calc(33.33% - 16px)"},
                                     maxWidth: "400px",
                                     my: 4,
                                 }}
                             >
-                                <Review review={review} />
+                                <Review review={review}/>
                             </Box>
                         ))}
                     </Box>
@@ -508,7 +531,7 @@ const Home = () => {
                             },
                         }}
                     >
-                        <ArrowForwardRoundedIcon />
+                        <ArrowForwardRoundedIcon/>
                     </IconButton>
                 </Box>
             </Box>
@@ -525,6 +548,21 @@ const Home = () => {
                     right: 0,
                 }}
             />
+
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={2500}
+                onClose={handleSnackBarClose}
+                anchorOrigin={{vertical: "top", horizontal: "center"}}
+            >
+                <MuiAlert
+                    onClose={handleSnackBarClose}
+                    severity={isSuccess ? "success" : "error"}
+                    sx={{width: "100%"}}
+                >
+                    {alertMessage}
+                </MuiAlert>
+            </Snackbar>
         </>
     )
 }
