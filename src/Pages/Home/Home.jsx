@@ -1,15 +1,12 @@
-import {Box, Button, Grid, IconButton, Pagination, Rating, Typography, colors, TextField,} from '@mui/material'
+import {Box, Button, Grid, IconButton, Pagination, Rating, Typography, TextField,} from '@mui/material'
 import car from '../../assets/car.png'
 import {useNavigate} from 'react-router-dom';
 import React, {useEffect, useState} from 'react';
-import AOS from "aos";
 import "aos/dist/aos.css";
 import Card from '../../Components/Card';
-import car1 from '../../assets/car1.png';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import Review from '../../Components/Review';
-import BidDialog from '../../Components/BidDialog';
 import {getVehicles} from '../../services/ApiService';
 import {Controller, useForm} from "react-hook-form";
 import NewService from '../../services/NewService';
@@ -128,7 +125,6 @@ const Home = () => {
 
     const handleSnackBarClose = () => {
         setOpenSnackbar(false);
-        // window.location.reload();
     }
 
     return (
@@ -177,7 +173,6 @@ const Home = () => {
                         fontSize: 20,
                         fontWeight: 600,
                         ':hover': {
-                            // border: '2px solid #6600B5',
                             bgcolor: '#6600B5',
                             color: '#FFFFFF',
                         }
@@ -192,7 +187,6 @@ const Home = () => {
                         width: 120,
                         height: 50,
                         borderRadius: '10px',
-                        // border: '2px solid #6600B5',
                         bgcolor: '#6600B5',
                         fontFamily: 'poppins',
                         fontSize: 20,
@@ -213,15 +207,12 @@ const Home = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                // bgcolor: 'yellow',
             }}>
                 <Typography sx={{
                     fontFamily: 'poppins',
                     fontSize: 40,
                     fontWeight: 600,
-                    // lineHeight: '24px',
                     mt: 20,
-                    // mx: 'auto',
                 }}>
                     Live Auctions
                 </Typography>
@@ -229,12 +220,10 @@ const Home = () => {
                     fontFamily: 'poppins',
                     fontSize: 16,
                     fontWeight: 600,
-                    // lineHeight: '24px',
                     color: '#757575',
                     width: 702,
                     mt: 2,
                     textAlign: 'center',
-                    // mx: 'auto',
                 }}>
                     Feel the Excitement, Make Your Move: Live Auctions Where Every Bid Counts, Every Win Celebrates,
                     Every Moment Thrills
@@ -278,9 +267,7 @@ const Home = () => {
                         fontFamily: "poppins",
                         fontSize: 40,
                         fontWeight: 600,
-                        // lineHeight: '24px',
                         mt: 10,
-                        // mx: 'auto',
                     }}
                 >
                     What Clients Say
@@ -458,12 +445,10 @@ const Home = () => {
                         fontFamily: "poppins",
                         fontSize: 16,
                         fontWeight: 500,
-                        // lineHeight: '24px',
                         color: "#757575",
                         width: 509,
                         mt: 2,
                         textAlign: "center",
-                        // mx: 'auto',
                     }}
                 >
                     User Feedbacks
@@ -536,7 +521,6 @@ const Home = () => {
                 </Box>
             </Box>
             <Box
-                // data-aos="fade-left"
                 component={'img'}
                 src={car}
                 sx={{
@@ -568,73 +552,3 @@ const Home = () => {
 }
 
 export default Home
-
-const reviews = [
-    {
-        id: 1,
-        name: 'carla',
-        image: 'hehe',
-        rating: 4,
-        comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Odio ut sem nulla pharetra diam sit amet. Morbi tristique senectus et netus et malesuada fames.'
-    },
-    {
-        id: 2,
-        name: 'carla',
-        image: 'hehe',
-        rating: 2,
-        comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Odio ut sem nulla pharetra diam sit amet. Morbi tristique senectus et netus et malesuada fames.'
-    },
-    {
-        id: 3,
-        name: 'carla',
-        image: 'hehe',
-        rating: 5,
-        comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Odio ut sem nulla pharetra diam sit amet. Morbi tristique senectus et netus et malesuada fames.'
-    },
-]
-
-
-// const cards = [
-//     {
-//         id: 1,
-//         title: '1996 Jaguar Classic Car',
-//         image: car1,
-//         price: 1200000,
-//         description: 'Classical Jaguar cars are synonymous with automotive royalty, embodying a rich heritage of luxury, style, and performance. From iconic models like the XK120 to the E-Type, they captivate enthusiasts with their timeless design, meticulous craftsmanship, and exhilarating driving dynamics.'
-//     },
-//     {
-//         id: 2,
-//         title: '1996 Jaguar Classic Car',
-//         image: 'hehe',
-//         price: 1200000,
-//         description: 'Classical Jaguar cars are synonymous with automotive royalty, embodying a rich heritage of luxury, style, and performance. From iconic models like the XK120 to the E-Type, they captivate enthusiasts with their timeless design, meticulous craftsmanship, and exhilarating driving dynamics.'
-//     },
-//     {
-//         id: 3,
-//         title: '1996 Jaguar Classic Car',
-//         image: 'hehe',
-//         price: 1200000,
-//         description: 'Classical Jaguar cars are synonymous with automotive royalty, embodying a rich heritage of luxury, style, and performance. From iconic models like the XK120 to the E-Type, they captivate enthusiasts with their timeless design, meticulous craftsmanship, and exhilarating driving dynamics.'
-//     },
-//     {
-//         id: 4,
-//         title: '1996 Jaguar Classic Car',
-//         image: 'hehe',
-//         price: 1200000,
-//         description: 'Classical Jaguar cars are synonymous with automotive royalty, embodying a rich heritage of luxury, style, and performance. From iconic models like the XK120 to the E-Type, they captivate enthusiasts with their timeless design, meticulous craftsmanship, and exhilarating driving dynamics.'
-//     },
-//     {
-//         id: 5,
-//         title: '1996 Jaguar Classic Car',
-//         image: 'hehe',
-//         price: 1200000,
-//         description: 'Classical Jaguar cars are synonymous with automotive royalty, embodying a rich heritage of luxury, style, and performance. From iconic models like the XK120 to the E-Type, they captivate enthusiasts with their timeless design, meticulous craftsmanship, and exhilarating driving dynamics.'
-//     },
-//     {
-//         id: 6,
-//         title: '1996 Jaguar Classic Car',
-//         image: 'hehe',
-//         price: 1200000,
-//         description: 'Classical Jaguar cars are synonymous with automotive royalty, embodying a rich heritage of luxury, style, and performance. From iconic models like the XK120 to the E-Type, they captivate enthusiasts with their timeless design, meticulous craftsmanship, and exhilarating driving dynamics.'
-//     },
-// ]
