@@ -123,12 +123,17 @@ const appHeaders = [
     },
     {
         id: 3,
-        name: 'SELL',
+        name: ' VEHICLES',
         urlPath: '/sell',
     },
     {
         id: 4,
         name: 'CONTACT',
         urlPath: '/contact',
+    },
+    {
+        id: 5,
+        name: 'GALLERY',
+        urlPath: '/gallery',
     },
 ]

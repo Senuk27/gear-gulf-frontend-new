@@ -8,6 +8,7 @@ import Contact from "./Pages/Contact/Contact";
 import MyBids from "./Pages/MyBids/MyBids";
 import Sell from "./Pages/Sell/Sell";
 import Image from "./Pages/Login/Image.jsx";
+import Gallery from "./Pages/Gallery/Gallery.jsx";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
         path: "/image",
         element: <Image />,
       },
+      
     ]
   },
   {
@@ -53,8 +55,8 @@ const router = createBrowserRouter([
         element: <Contact />,
       },
       {
-        path: "/sign-up",
-        // element: <Signup />,
+        path: "/gallery",
+        element: <Gallery />,
       },
     ]
   },
